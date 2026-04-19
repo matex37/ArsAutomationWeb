@@ -1,0 +1,31 @@
+{
+  "url": "https://appliancesrepairservice.ca/",
+  "postal_code": "L6A 5A4",
+
+  "customer": {
+    "first": "Test",
+    "last": "Test",
+    "email": "test@gmail.com",
+    "address": "25 ilan Ramon",
+    "city": "Maple",
+    "state": "ON",
+    "phone": "(438) 246-9560"
+  },
+
+  "appliance": {
+    "make": "LG",
+    "type": "BUILT IN STOVE",
+    "model": "45678946654",
+    "serial": "78945651546",
+    "dealer": "COSCTO",
+    "problem": "test description problem"
+  },
+
+  "dates": {
+    "month_index": "4",
+    "day_label": "May 1,",
+    "service_days_ahead": 7,
+    "purchase_month_index": "0",
+    "purchase_day": "January 7,"
+  }
+}
