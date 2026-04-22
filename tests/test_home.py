@@ -1,13 +1,13 @@
-from pages.home_page import HomePage
-from utils.logger import get_logger
+import json
+import allure
 
-log = get_logger()
+# загрузка данных
+with open("booking_data.json", "r") as f:
+    data = json.load(f)
 
-def test_home(page):
-    log.info("Opening home page")
+@allure.feature("Home_page")
+@allure.story("Home page load")
+def test_homepage_load(page):
+    page.goto(data["url"])
 
-    home = HomePage(page)
-    home.open_home()
-
-    log.info("Checking title")
-    assert "Repair" in page.title()
+    assert "Appliance" in page.title()
