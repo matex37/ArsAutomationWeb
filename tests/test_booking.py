@@ -93,6 +93,12 @@ def test_booking_form(page):
     expect(frame.get_by_text("Check")).to_be_visible()
     expect(frame.get_by_text("Credit/Debit")).to_be_visible()
 
+    frame.get_by_text("Cash").click(force=True)
+
+    # дошли до финального шага
+    expect(frame.get_by_text("Let's review.")).to_be_visible()
+
+
 def get_target_date(days_ahead):
     return datetime.today() + timedelta(days=days_ahead)
 
