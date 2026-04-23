@@ -34,10 +34,14 @@ def test_navigation_contact_us(page):
 def test_navigation_blog(page):
     page.goto(data["url"])
 
-    page.locator("nav >> text=Blog").first.scroll_into_view_if_needed()
+    blog_link = page.get_by_role("link", name="Blog")
 
-    with page.expect_navigation():
-        page.locator("nav >> text=Blog").first.click()
+    blog_link.scroll_into_view_if_needed()
+    blog_link.click()
+
+    page.wait_for_load_state("load")
+
+    assert "blog" in page.url.lower()
 
 
 def test_logo_redirect_home(page):

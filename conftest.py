@@ -12,15 +12,9 @@ def browser():
         browser.close()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def page(browser):
-    context = browser.new_context(
-        viewport=None
-    )
-
+    context = browser.new_context(no_viewport=True)
     page = context.new_page()
-    page.set_viewport_size({"width": 1920, "height": 1080})
-
     yield page
-
     context.close()
