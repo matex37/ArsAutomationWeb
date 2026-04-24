@@ -2,14 +2,14 @@ import json
 import allure
 from playwright.sync_api import expect
 from datetime import datetime, timedelta
+from utils.data_loader import load_booking_data
 
-# загрузка данных
-with open("booking_data.json", "r") as f:
-    data = json.load(f)
 
 @allure.feature("Booking")
 @allure.story("Submit booking form")
 def test_booking_form(page):
+
+    data = load_booking_data()
 
     page.goto(data["url"])
 

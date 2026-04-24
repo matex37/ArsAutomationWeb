@@ -1,12 +1,11 @@
 import json
 import allure
+from utils.data_loader import load_booking_data
 
-# загрузка данных
-with open("booking_data.json", "r") as f:
-    data = json.load(f)
-
-
+@allure.feature("Navigation")
+@allure.story("Test navigation pages")
 def test_homepage_load(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     assert page.title() != ""
@@ -14,6 +13,7 @@ def test_homepage_load(page):
 
 
 def test_navigation_menu_services(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     page.click("text=Services")
@@ -23,6 +23,7 @@ def test_navigation_menu_services(page):
 
 
 def test_navigation_contact_us(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     page.click("text=Contact")
@@ -32,6 +33,7 @@ def test_navigation_contact_us(page):
 
 
 def test_navigation_blog(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     blog_link = page.get_by_role("link", name="Blog")
@@ -45,6 +47,7 @@ def test_navigation_blog(page):
 
 
 def test_logo_redirect_home(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     page.click("img[alt*='logo'], .logo")

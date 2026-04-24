@@ -1,12 +1,11 @@
 import json
 import allure
-# загрузка данных
-with open("booking_data.json", "r") as f:
-    data = json.load(f)
+from utils.data_loader import load_booking_data
 
 @allure.feature("Form")
 @allure.story("Validation")
 def test_form_empty_validation(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     with allure.step("Submit empty form"):

@@ -1,13 +1,11 @@
 import json
 import allure
-
-# загрузка данных
-with open("booking_data.json", "r") as f:
-    data = json.load(f)
+from utils.data_loader import load_booking_data
 
 @allure.feature("Home_page")
 @allure.story("Home page load")
 def test_homepage_load(page):
+    data = load_booking_data()
     page.goto(data["url"])
 
     assert "Appliance" in page.title()

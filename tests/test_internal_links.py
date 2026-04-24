@@ -1,13 +1,12 @@
 import json
 import allure
-
-# загрузка данных
-with open("booking_data.json", "r") as f:
-    data = json.load(f)
+from utils.data_loader import load_booking_data
 
 @allure.feature("Internal links")
 @allure.story("Test check internal links navigation")
 def test_internal_links_navigation(page):
+    data = load_booking_data()
+
     page.goto(data["url"])
 
     links = page.locator("a[href^='/']")
