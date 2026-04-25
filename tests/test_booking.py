@@ -1,6 +1,6 @@
 import allure
-from playwright.sync_api import expect
 from datetime import datetime, timedelta
+from pages.booking_page import BookingPage
 from utils.data_loader import load_booking_data
 
 
@@ -15,105 +15,42 @@ def get_future_workday(days_ahead=3):
 
     return current
 
-
 @allure.feature("Booking")
-@allure.story("Submit booking form")
 def test_booking_form(page):
 
     data = load_booking_data()
+    booking = BookingPage(page)
 
-    # ===== DATE (внутри теста!) =====
+    # дата
     target_date = get_future_workday(3)
     month_index = str(target_date.month - 1)
     day_label = target_date.strftime("%B ") + str(target_date.day) + ","
 
-    with allure.step("Open homepage"):
-        page.goto(data["url"])
+    with allure.step("Open booking page"):
+        booking.open(data["url"])
+        booking.open_booking()
 
-    with allure.step("Open booking form"):
-        page.get_by_role("link", name="Book Online").click()
+    with allure.step("Filling Postal Code"):
+        booking.select_service()
+        booking.fill_postal(data["postal_code"])
+        booking.click_next()
 
-    # скролл
-    page.mouse.wheel(0, 250)
+    with allure.step("Choose the visit day"):
+        booking.select_booking_date(month_index, day_label)
+        booking.click_next()
 
-    # ждать iframe
-    page.wait_for_selector("#main iframe", timeout=15000)
-    frame = page.frame_locator("#main iframe")
-
-    # ===== STEP 1 =====
-    with allure.step("Select service + postal"):
-        frame.get_by_text("Standard").click()
-
-        postal = frame.locator("#customer-zip_postal")
-        postal.wait_for()
-        postal.fill(data["postal_code"])
-
-        allure.attach(page.screenshot(), name="Postal code", attachment_type=allure.attachment_type.PNG)
-
-        frame.get_by_text("Next").click()
-
-    # ===== STEP 2 =====
-    with allure.step("Select booking date"):
-        date_input = frame.get_by_role("textbox", name="Click to select")
-
-        date_input.click()
-
-        frame.get_by_label("Month").select_option(month_index)
-        frame.get_by_label(day_label).click()
-
-        frame.get_by_text("Next").click()
-
-    # ===== STEP 3 =====
-    with allure.step("Fill customer info"):
-        c = data["customer"]
-
-        frame.locator("input[name='customer-first']").fill(c["first"])
-        frame.locator("input[name='customer-last']").fill(c["last"])
-        frame.locator("input[name='customer-email']").fill(c["email"])
-        frame.locator("input[name='customer-address']").fill(c["address"])
-        frame.locator("input[name='customer-city']").fill(c["city"])
-        frame.get_by_role("combobox").select_option(c["state"])
-        frame.locator("input[name='customer-phone1']").fill(c["phone"])
-
-        allure.attach(page.screenshot(), "Customer", allure.attachment_type.PNG)
-
-        frame.get_by_text("Next").click()
-
-    # ===== STEP 4 =====
-    with allure.step("Fill appliance info"):
-        a = data["appliance"]
-
-        frame.locator("select[name='machine-make']").select_option(a["make"])
-        frame.locator("select[name='machine-type']").select_option(a["type"])
-        frame.locator("input[name='machine-model_number']").fill(a["model"])
-        frame.locator("input[name='machine-serial_number']").fill(a["serial"])
-        frame.locator("select[name='machine-dealer']").select_option(a["dealer"])
-
-        allure.attach(page.screenshot(), "Appliance Info", allure.attachment_type.PNG)
-
-        # purchase date
-        purchase = frame.get_by_role("textbox", name="Click to select")
-        purchase.click()
-
-        frame.get_by_label("Month").select_option(data["dates"]["purchase_month_index"])
-        frame.get_by_label(data["dates"]["purchase_day"]).click()
-
-        frame.locator("textarea[name='machine-problem_description']").fill(a["problem"])
-
-        frame.get_by_text("Next").click()
-
-    # ===== STEP 5 =====
-    with allure.step("Verify payment"):
-        expect(frame.get_by_text("How will you pay for this appointment?")).to_be_visible()
-        expect(frame.get_by_text("Cash")).to_be_visible()
-        allure.attach(page.screenshot(), "How will you pay", allure.attachment_type.PNG)
-
-    with allure.step("Select payment"):
-        frame.get_by_text("Cash").click(force=True)
+    with allure.step("Fill customer data"):
+        booking.fill_customer(data["customer"])
+        booking.click_next()
 
 
-    # ===== FINAL =====
-    with allure.step("Verify review screen"):
-        expect(frame.get_by_text("Let's review.")).to_be_visible()
+    with allure.step("Fill appliance data"):
+        booking.fill_appliance(data["appliance"], data["dates"])
+        booking.click_next()
 
-        allure.attach(page.screenshot(), "Final screen", allure.attachment_type.PNG)
+    with allure.step("Choose payment method"):
+        booking.verify_payment()
+        booking.select_cash()
+
+    with allure.step("Final screen before submit"):
+        booking.verify_review()
