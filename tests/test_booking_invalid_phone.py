@@ -43,10 +43,10 @@ def test_booking_invalid_phone(page):
     date_input.click()
 
     # (опционально) переключить месяц
-    frame.get_by_label("Month").select_option(data["dates"]["month_index"])
+    frame.get_by_label("Month").select_option(month_index)
 
     #  Выбрать день
-    frame.get_by_label(data["dates"]["day_label"]).click()
+    frame.get_by_label(day_label).click()
 
     # Подтвердить и идти дальше
     frame.get_by_text("Next").click()
@@ -78,3 +78,23 @@ def test_booking_invalid_phone(page):
             or aria_disabled == "true"
             or pointer_events == "none"
     )
+
+def get_future_workday(days_ahead=3):
+    current = datetime.today()
+
+    added_days = 0
+    while added_days < days_ahead:
+        current += timedelta(days=1)
+
+        # 0=Monday ... 6=Sunday
+        if current.weekday() < 5:  # рабочий день
+            added_days += 1
+
+    return current
+
+target_date = get_future_workday(3)
+print("Selected date:", target_date.strftime("%B %d,"))
+
+
+month_index = str(target_date.month - 1)  # Playwright select
+day_label = target_date.strftime("%B ") + str(target_date.day) + ","
