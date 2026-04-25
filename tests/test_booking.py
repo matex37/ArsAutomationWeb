@@ -34,7 +34,7 @@ def test_booking_form(page):
         page.get_by_role("link", name="Book Online").click()
 
     # скролл
-    page.mouse.wheel(0, 500)
+    page.mouse.wheel(0, 250)
 
     # ждать iframe
     page.wait_for_selector("#main iframe", timeout=15000)

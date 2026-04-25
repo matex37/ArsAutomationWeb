@@ -3,66 +3,81 @@ from playwright.sync_api import expect
 from datetime import datetime, timedelta
 from utils.data_loader import load_booking_data
 
+def get_future_workday(days_ahead=3):
+    current = datetime.today()
+    added_days = 0
+
+    while added_days < days_ahead:
+        current += timedelta(days=1)
+        if current.weekday() < 5:
+            added_days += 1
+
+    return current
 
 @allure.feature("Booking invalid email")
 @allure.story("Booking with invalid email")
 def test_booking_invalid_email(page):
-
     data = load_booking_data()
 
-    page.goto(data["url"])
+    # ===== DATE (внутри теста!) =====
+    target_date = get_future_workday(3)
+    month_index = str(target_date.month - 1)
+    day_label = target_date.strftime("%B ") + str(target_date.day) + ","
 
-    page.get_by_role("link", name="Book Online").click()
+    with allure.step("Open homepage"):
+        page.goto(data["url"])
 
+    with allure.step("Open booking form"):
+        page.get_by_role("link", name="Book Online").click()
+
+    # скролл
     page.mouse.wheel(0, 250)
-    page.wait_for_timeout(2000)
 
+    # ждать iframe
+    page.wait_for_selector("#main iframe", timeout=15000)
     frame = page.frame_locator("#main iframe")
-    frame.get_by_text("Standard").click()
 
-    page.wait_for_timeout(3000)
+    # ===== STEP 1 =====
+    with allure.step("Select service + postal"):
+        frame.get_by_text("Standard").click()
 
-    # postal
-    postal = frame.locator("#customer-zip_postal")
-    postal.wait_for(timeout=15000)
-    postal.fill(data["postal_code"])
+        postal = frame.locator("#customer-zip_postal")
+        postal.wait_for()
+        postal.fill(data["postal_code"])
 
-    frame.get_by_text("Next").click()
+        allure.attach(page.screenshot(), name="Postal code", attachment_type=allure.attachment_type.PNG)
 
-    # выбрать дату
-    date_input = frame.get_by_role("textbox", name="Click to select")
-    date_input.click()
+        frame.get_by_text("Next").click()
 
-    # выбрать любую дату (как откроется календарь)
-    frame.get_by_role("img").first.click()
+    # ===== STEP 2 =====
+    with allure.step("Select booking date"):
+        date_input = frame.get_by_role("textbox", name="Click to select")
 
-    frame.get_by_text("Next").click()
+        date_input.click()
 
-    # Открыть выбор даты
-    date_input = frame.get_by_role("textbox", name="Click to select")
-    date_input.click()
+        frame.get_by_label("Month").select_option(month_index)
+        frame.get_by_label(day_label).click()
 
-    # (опционально) переключить месяц
-    frame.get_by_label("Month").select_option(month_index)
+        frame.get_by_text("Next").click()
 
-    #  Выбрать день
-    frame.get_by_label(day_label).click()
+    # ===== STEP 3 =====
+    with allure.step("Fill customer info"):
+        c = data["customer"]
 
-    # Подтвердить и идти дальше
-    frame.get_by_text("Next").click()
+        frame.locator("input[name='customer-first']").fill(c["first"])
+        frame.locator("input[name='customer-last']").fill(c["last"])
+        frame.locator("input[name='customer-email']").fill(c["wrong_email"])
+        frame.locator("input[name='customer-address']").fill(c["address"])
+        frame.locator("input[name='customer-city']").fill(c["city"])
+        frame.get_by_role("combobox").select_option(c["state"])
+        frame.locator("input[name='customer-phone1']").fill(c["phone"])
 
-    # ===== CUSTOMER =====
-    customer = data["customer"]
+        allure.attach(page.screenshot(), "Customer", allure.attachment_type.PNG)
 
-    frame.locator("input[name='customer-first']").fill(customer["first"])
-    frame.locator("input[name='customer-last']").fill(customer["last"])
-    frame.locator("input[name='customer-email']").fill(customer["wrong_email"])
-    frame.locator("input[name='customer-address']").fill(customer["address"])
-    frame.locator("input[name='customer-city']").fill(customer["city"])
-    frame.get_by_role("combobox").select_option(customer["state"])
-    frame.locator("input[name='customer-phone1']").fill(customer["phone"])
+        frame.get_by_text("Next").click()
 
-    email = (customer["wrong_email"])
+
+    email = (c["wrong_email"])
     print(" Wrong email is:", email)
 
     frame.get_by_text("Next").click()
@@ -78,22 +93,3 @@ def test_booking_invalid_email(page):
             or aria_disabled == "true"
             or pointer_events == "none"
     )
-def get_future_workday(days_ahead=3):
-    current = datetime.today()
-
-    added_days = 0
-    while added_days < days_ahead:
-        current += timedelta(days=1)
-
-        # 0=Monday ... 6=Sunday
-        if current.weekday() < 5:  # рабочий день
-            added_days += 1
-
-    return current
-
-target_date = get_future_workday(3)
-print("Selected date:", target_date.strftime("%B %d,"))
-
-
-month_index = str(target_date.month - 1)  # Playwright select
-day_label = target_date.strftime("%B ") + str(target_date.day) + ","
