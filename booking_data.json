@@ -6,10 +6,12 @@
     "first": "Test",
     "last": "Test",
     "email": "test@gmail.com",
+    "wrong_email": "abracadabra",
     "address": "25 ilan Ramon",
     "city": "Maple",
     "state": "ON",
-    "phone": "(438) 246-9560"
+    "phone": "(438) 246-9560",
+    "wrong_phone": "12345"
   },
 
   "appliance": {
