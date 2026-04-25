@@ -1,0 +1,135 @@
+import allure
+from playwright.sync_api import expect
+from datetime import datetime, timedelta
+from utils.data_loader import load_booking_data
+
+
+@allure.feature("Booking")
+@allure.story("Submit booking form")
+def test_booking_form(page):
+
+    data = load_booking_data()
+    # Open homepage
+    with allure.step("Open homepage"):
+        page.goto(data["url"])
+
+    # Open Booking online
+    with allure.step("Open booking form"):
+        page.get_by_role("link", name="Book Online").click()
+
+    page.mouse.wheel(0, 250)
+    page.wait_for_timeout(2000)
+
+    frame = page.frame_locator("#main iframe")
+    frame.get_by_text("Standard").click()
+
+    page.wait_for_timeout(3000)
+
+    # Choose postal code
+    with allure.step("Fill postal code"):
+        frame.locator("#customer-zip_postal").fill(data["postal_code"])
+
+        allure.attach(page.screenshot(), name="After postal", attachment_type=allure.attachment_type.PNG)
+
+    frame.get_by_text("Next").click()
+
+    # выбрать дату
+    date_input = frame.get_by_role("textbox", name="Click to select")
+    date_input.click()
+
+    # выбрать любую дату (как откроется календарь)
+    frame.get_by_role("img").first.click()
+
+    frame.get_by_text("Next").click()
+
+    # Открыть выбор даты
+    date_input = frame.get_by_role("textbox", name="Click to select")
+    date_input.click()
+
+    # (опционально) переключить месяц
+    frame.get_by_label("Month").select_option(month_index)
+
+    #  Выбрать день
+    frame.get_by_label(day_label).click()
+
+    # Подтвердить и идти дальше
+    frame.get_by_text("Next").click()
+
+    # ===== CUSTOMER =====
+    customer = data["customer"]
+    with allure.step("Fill customer info"):
+        frame.locator("input[name='customer-first']").fill(customer["first"])
+        frame.locator("input[name='customer-last']").fill(customer["last"])
+        frame.locator("input[name='customer-email']").fill(customer["email"])
+        frame.locator("input[name='customer-address']").fill(customer["address"])
+        frame.locator("input[name='customer-city']").fill(customer["city"])
+        frame.get_by_role("combobox").select_option(customer["state"])
+        frame.locator("input[name='customer-phone1']").fill(customer["phone"])
+
+        allure.attach(page.screenshot(), name="Customer data", attachment_type=allure.attachment_type.PNG)
+
+        frame.get_by_text("Next").click()
+
+    # ===== APPLIANCE =====
+    appliance = data["appliance"]
+
+    with allure.step("Fill appliance info"):
+        frame.locator("select[name='machine-make']").select_option(appliance["make"])
+        frame.locator("select[name='machine-type']").select_option(appliance["type"])
+        frame.locator("input[name='machine-model_number']").fill(appliance["model"])
+        frame.locator("input[name='machine-serial_number']").fill(appliance["serial"])
+        frame.locator("select[name='machine-dealer']").select_option(appliance["dealer"])
+
+        allure.attach(page.screenshot(), name="Appliance Info", attachment_type=allure.attachment_type.PNG)
+
+    # purchase date
+    purchase_date = frame.get_by_role("textbox", name="Click to select")
+    purchase_date.click()
+
+    frame.get_by_label("Month").select_option(data["dates"]["purchase_month_index"])
+    frame.get_by_label(data["dates"]["purchase_day"]).click()
+
+    frame.locator("textarea[name='machine-problem_description']").fill(
+        appliance["problem"]
+    )
+
+    frame.get_by_text("Next").click()
+
+    # ASSERTS
+    expect(frame.get_by_text("How will you pay for this appointment?")).to_be_visible()
+    expect(frame.get_by_text("Cash")).to_be_visible()
+    expect(frame.get_by_text("Check")).to_be_visible()
+    expect(frame.get_by_text("Credit/Debit")).to_be_visible()
+
+    frame.get_by_text("Cash").click(force=True)
+
+    # дошли до финального шага
+    expect(frame.get_by_text("Let's review.")).to_be_visible()
+
+    with allure.step("Booking date"):
+        allure.attach(page.screenshot(), name="Selected date", attachment_type=allure.attachment_type.PNG)
+
+
+def get_target_date(days_ahead):
+    return datetime.today() + timedelta(days=days_ahead)
+
+def get_future_workday(days_ahead=3):
+    current = datetime.today()
+
+    added_days = 0
+    while added_days < days_ahead:
+        current += timedelta(days=1)
+
+        # 0=Monday ... 6=Sunday
+        if current.weekday() < 5:  # рабочий день
+            added_days += 1
+
+    return current
+
+target_date = get_future_workday(3)
+print("Selected date:", target_date.strftime("%B %d,"))
+
+
+month_index = str(target_date.month - 1)  # Playwright select
+day_label = target_date.strftime("%B ") + str(target_date.day) + ","
+
