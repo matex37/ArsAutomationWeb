@@ -16,6 +16,7 @@ def get_future_workday(days_ahead=3):
     return current
 
 @allure.feature("Booking")
+@allure.story("Booking new appointment for appliances")
 def test_booking_form(page):
 
     data = load_booking_data()
