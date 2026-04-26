@@ -16,8 +16,8 @@ def get_future_workday(days_ahead=3):
     return current
 
 @allure.feature("Booking")
-@allure.story("Negative - wrong email")
-def test_invalid_email(page):
+@allure.story("Negative - empty customer form")
+def test_booking_empty_customer(page):
     data = load_booking_data()
     booking = BookingPage(page)
 
@@ -39,16 +39,11 @@ def test_invalid_email(page):
         booking.select_booking_date(month_index, day_label)
         booking.click_next()
 
-    # 👇 КЛЮЧЕВОЕ МЕСТО
-    customer = data["customer"].copy()
-    customer["email"] = "abracadabra_email"  # ❌ wrong email
+    # ❗ НИЧЕГО НЕ ЗАПОЛНЯЕМ
 
-    with allure.step("Fill customer with wrong email"):
-        booking.fill_customer(customer)
-
-    with allure.step("Click Next"):
-        booking.click_next()
-
-    with allure.step("Verify we did NOT move forward"):
-        # остаёмся на той же странице (customer step)
+    with allure.step("Verify we are on customer step"):
         assert booking.frame.locator("input[name='customer-email']").is_visible()
+
+    with allure.step("Verify Next button is disabled"):
+        assert booking.is_next_disabled()
+

@@ -102,12 +102,14 @@ class BookingPage:
 
         class_attr = next_btn.get_attribute("class") or ""
         aria_disabled = next_btn.get_attribute("aria-disabled")
-        pointer_events = next_btn.evaluate("el => getComputedStyle(el).pointerEvents")
+        pointer_events = next_btn.evaluate(
+            "el => getComputedStyle(el).pointerEvents"
+        )
 
         import allure
         allure.attach(
-            f"class={class_attr}\naria-disabled={aria_disabled}\npointer-events={pointer_events}",
-            name="Next button state"
+            f"class={class_attr}\naria={aria_disabled}\npointer={pointer_events}",
+            name="Next button debug"
         )
 
         return (
