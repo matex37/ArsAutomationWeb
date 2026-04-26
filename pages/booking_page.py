@@ -6,6 +6,7 @@ class BookingPage:
     def __init__(self, page):
         self.page = page
         self.frame = page.frame_locator("#main iframe")
+        self.service_area_error = page.get_by_text("we do not yet serve your area", exact=False)
 
     # ===== OPEN =====
     def open(self, url):
@@ -116,4 +117,11 @@ class BookingPage:
                 "disabled" in class_attr.lower()
                 or aria_disabled == "true"
                 or pointer_events == "none"
+        )
+
+    def take_screenshot(self, name: str):
+        allure.attach(
+            self.page.screenshot(),
+            name=name,
+            attachment_type=allure.attachment_type.PNG
         )

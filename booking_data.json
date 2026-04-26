@@ -1,6 +1,7 @@
 {
   "url": "https://appliancesrepairservice.ca/",
   "postal_code": "L6A 5A4",
+  "wrong_postal_code": "J7V 8P5",
 
   "customer": {
     "first": "Test",
