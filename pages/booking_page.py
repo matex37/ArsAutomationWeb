@@ -30,7 +30,16 @@ class BookingPage:
         self.screenshot("Postal filled")
 
     def click_next(self):
-        self.frame.get_by_text("Next").click()
+        btn = self.frame.locator("text=Next").first
+        btn.wait_for(state="visible")
+        btn.scroll_into_view_if_needed()
+        btn.click()
+
+    def click_back(self):
+        btn = self.frame.locator("text=Back").first
+        btn.wait_for(state="visible")
+        btn.scroll_into_view_if_needed()
+        btn.click()
 
     # ===== STEP 2 =====
     def select_booking_date(self, month_index, day_label):
@@ -94,9 +103,6 @@ class BookingPage:
             attachment_type=allure.attachment_type.PNG
         )
 
-    def click_next(self):
-        self.frame.get_by_text("Next").click()
-
     # проверяем CSS состояние
     def is_next_disabled(self):
         next_btn = self.frame.get_by_text("Next")
@@ -119,9 +125,14 @@ class BookingPage:
                 or pointer_events == "none"
         )
 
-    def take_screenshot(self, name: str):
-        allure.attach(
-            self.page.screenshot(),
-            name=name,
-            attachment_type=allure.attachment_type.PNG
-        )
+    def open_calendar(self):
+        date_input = self.frame.get_by_role("textbox", name="Click to select")
+        date_input.wait_for(state="visible", timeout=10000)
+        # scroll inside iframe to make sure element is fully in view
+        date_input.scroll_into_view_if_needed()
+        self.page.mouse.wheel(0, 500)  # небольшой доп. scroll (страховка)
+
+        self.screenshot("Calendar opened")
+        date_input.click()
+
+
