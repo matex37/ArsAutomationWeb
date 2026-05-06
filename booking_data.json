@@ -27,5 +27,11 @@
   "dates": {
     "purchase_month_index": "0",
     "purchase_day": "January 7,"
-  }
+  },
+  "service_types": [
+    "Standard",
+    "Manufacturer Warranty",
+    "Extended Warranty",
+    "Third-Party"
+  ]
 }
