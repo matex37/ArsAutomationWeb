@@ -32,7 +32,7 @@ def test_booking_form(page):
         booking.open_booking()
 
     with allure.step("Filling Postal Code"):
-        booking.select_service()
+        booking.select_service("Standard")
         booking.fill_postal(data["postal_code"])
 
 
@@ -43,7 +43,7 @@ def test_booking_form(page):
         booking.screenshot("After reload")
 
     with allure.step("Verify postal is empty"):
-        booking.select_service()
+        booking.select_service("Standard")
 
         postal_after = booking.frame.locator("#customer-zip_postal").input_value()
 

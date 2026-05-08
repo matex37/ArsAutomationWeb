@@ -32,7 +32,7 @@ def test_booking_form(page):
         booking.open_booking()
 
     with allure.step("Filling Postal Code"):
-        booking.select_service()
+        booking.select_service("Standard")
         booking.fill_postal(data["postal_code"])
         booking.click_next()
 

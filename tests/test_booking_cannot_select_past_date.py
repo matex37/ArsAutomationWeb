@@ -25,7 +25,7 @@ def test_cannot_select_past_date(page):
         booking.open(data["url"])
         booking.open_booking()
 
-        booking.select_service()
+        booking.select_service("Standard")
         booking.fill_postal(data["postal_code"])
         booking.click_next()
 
