@@ -23,14 +23,29 @@ def page(browser):
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
+
     outcome = yield
     report = outcome.get_result()
 
-    if report.when == "call" and report.failed:
-        page = item.funcargs.get("page")
-        if page:
+    if report.when != "call" or not report.failed:
+        return
+
+    page = item.funcargs.get("page", None)
+
+    if not page:
+        return
+
+    try:
+        if not page.is_closed():
+
+            screenshot = page.screenshot(full_page=True)
+
             allure.attach(
-                page.screenshot(),
+                screenshot,
                 name="FAILED SCREEN",
                 attachment_type=allure.attachment_type.PNG
             )
+
+    except Exception:
+        # NEVER break pytest execution
+        pass

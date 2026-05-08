@@ -19,8 +19,43 @@ class BookingPage:
         self.page.wait_for_selector("#main iframe")
 
     # ===== STEP 1 =====
-    def select_service(self):
-        self.frame.get_by_text("Standard").click()
+    def select_service(self, service_type: str):
+        self.frame.get_by_text(service_type, exact=True).first.click()
+
+
+    def fill_extended_warranty_info(self, data):
+        frame = self.frame
+
+        frame.locator("input[name='extended_warranty-provider']").first.wait_for()
+
+        provider = frame.locator("input[name='extended_warranty-provider']")
+        contract = frame.locator("input[name='extended_warranty-contract_number']")
+        po = frame.locator("input[name='extended_warranty-purchase_order_number']")
+
+        provider.wait_for(state="visible")
+        provider.fill(data["provider"])
+
+        contract.wait_for(state="visible")
+        contract.fill(data["contract_number"])
+
+        po.wait_for(state="visible")
+        po.fill(data["purchase_order_number"])
+
+    def fill_third_party_payer(self, payer: dict):
+        frame = self.page.frame_locator("#main iframe")
+
+        frame.locator("input[name*='payer']").first.wait_for(state="visible", timeout=10000)
+
+        frame.locator("input[name='payer-organization']").fill(payer["organization"])
+        frame.locator("input[name='payer-first']").fill(payer["first_name"])
+        frame.locator("input[name='payer-last']").fill(payer["last_name"])
+        frame.locator("input[name='payer-email']").fill(payer["email"])
+        frame.locator("input[name='payer-address']").fill(payer["address"])
+        frame.locator("input[name='payer-city']").fill(payer["city"])
+        frame.get_by_role("combobox").select_option(payer["province"])
+        frame.locator("input[name='payer-zip_postal']").fill(payer["postal_code"])
+        frame.locator("input[name='payer-phone1']").fill(payer["phone1"])
+
 
     def fill_postal(self, postal):
         postal_input = self.frame.locator("#customer-zip_postal")

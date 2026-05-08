@@ -24,10 +24,34 @@
     "problem": "test description problem"
   },
 
+  "extended_warranty": {
+  "provider": "Assurant",
+  "contract_number": "3472894520",
+  "purchase_order_number": "PO-778899"
+  },
+
+   "third_party": {
+  "payer": {
+    "organization": "ABC Insurance Inc",
+    "first_name": "John",
+    "last_name": "Smith",
+    "email": "john.smith@email.com",
+    "address": "123 Main St",
+    "city": "Toronto",
+    "province": "ON",
+    "postal_code": "L6A 5A4",
+    "phone1": "4161234567"
+  }
+},
+
   "dates": {
     "purchase_month_index": "0",
     "purchase_day": "January 7,"
   },
+
+  "manufacturer_warranty": {
+  "claim_number": "MW-123456"
+},
   "service_types": [
     "Standard",
     "Manufacturer Warranty",
