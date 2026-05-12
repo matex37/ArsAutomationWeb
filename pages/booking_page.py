@@ -21,6 +21,7 @@ class BookingPage:
     # ===== STEP 1 =====
     def select_service(self, service_type: str):
         self.frame.get_by_text(service_type, exact=True).first.click()
+        self.screenshot("Select service")
 
 
     def fill_extended_warranty_info(self, data):
@@ -40,6 +41,7 @@ class BookingPage:
 
         po.wait_for(state="visible")
         po.fill(data["purchase_order_number"])
+        self.screenshot("Fill extended warranty")
 
     def fill_third_party_payer(self, payer: dict):
         frame = self.page.frame_locator("#main iframe")
@@ -55,6 +57,7 @@ class BookingPage:
         frame.get_by_role("combobox").select_option(payer["province"])
         frame.locator("input[name='payer-zip_postal']").fill(payer["postal_code"])
         frame.locator("input[name='payer-phone1']").fill(payer["phone1"])
+        self.screenshot("Fill third party payer info")
 
 
     def fill_postal(self, postal):
@@ -62,7 +65,7 @@ class BookingPage:
         postal_input.wait_for()
         postal_input.fill(postal)
 
-        self.screenshot("Postal filled")
+        self.screenshot("Postal code filled")
 
     def click_next(self):
         btn = self.frame.locator("text=Next").first
@@ -83,6 +86,7 @@ class BookingPage:
 
         self.frame.get_by_label("Month").select_option(month_index)
         self.frame.get_by_label(day_label).click()
+        self.screenshot("Select booking date")
 
     # ===== STEP 3 =====
     def fill_customer(self, c):
@@ -132,6 +136,7 @@ class BookingPage:
 
     # ===== Screenshot =====#
     def screenshot(self, name):
+        self.page.wait_for_timeout(500)
         allure.attach(
             self.page.screenshot(),
             name=name,
