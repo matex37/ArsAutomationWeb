@@ -4,14 +4,14 @@
   "wrong_postal_code": "J7V 8P5",
 
   "customer": {
-    "first": "Test",
-    "last": "Test",
-    "email": "test@gmail.com",
+    "first": "{{first_name}}",
+    "last": "{{last_name}}",
+    "email": "{{email}}",
     "wrong_email": "abracadabra",
-    "address": "25 ilan Ramon",
+    "address": "{{street_address}}",
     "city": "Maple",
     "state": "ON",
-    "phone": "(438) 246-9560",
+    "phone": "{{phone_number}}",
     "wrong_phone": "12345"
   },
 
@@ -26,21 +26,21 @@
 
   "extended_warranty": {
   "provider": "Assurant",
-  "contract_number": "3472894520",
+  "contract_number": "{{phone_number}}",
   "purchase_order_number": "PO-778899"
   },
 
    "third_party": {
   "payer": {
-    "organization": "ABC Insurance Inc",
-    "first_name": "John",
-    "last_name": "Smith",
-    "email": "john.smith@email.com",
-    "address": "123 Main St",
+    "organization": "{{company}}",
+    "first_name": "{{first_name}}",
+    "last_name": "{{last_name}}",
+    "email": "{{email}}",
+    "address": "{{street_address}}",
     "city": "Toronto",
     "province": "ON",
     "postal_code": "L6A 5A4",
-    "phone1": "4161234567"
+    "phone1": "{{phone_number}}"
   }
 },
 
