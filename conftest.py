@@ -1,6 +1,9 @@
 import pytest
 import allure
 from playwright.sync_api import sync_playwright
+from pages.booking_page import BookingPage
+from utils.data_loader import load_booking_data
+
 
 @pytest.fixture(scope="session")
 def browser():
@@ -49,3 +52,12 @@ def pytest_runtest_makereport(item, call):
     except Exception:
         # NEVER break pytest execution
         pass
+
+@pytest.fixture
+def booking(page):
+    return BookingPage(page)
+
+
+@pytest.fixture
+def data():
+    return load_booking_data()

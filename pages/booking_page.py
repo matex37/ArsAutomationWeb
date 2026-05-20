@@ -175,4 +175,13 @@ class BookingPage:
         self.screenshot("Calendar opened")
         date_input.click()
 
+    def submit_booking(self):
+        btn = self.frame.locator("span.navButton.rightButton")
+
+        btn.wait_for(state="visible")
+        btn.scroll_into_view_if_needed()
+        btn.click(force=True)
+
+        self.screenshot("Submit booking")
+
 
